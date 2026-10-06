@@ -1,0 +1,223 @@
+﻿@model MyApp.Web.Models.User
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<div class="container mt-4">
+
+    <div class="mb-4">
+        <h2>Settings</h2>
+
+        <p class="text-muted">
+            Manage your account and security settings.
+        </p>
+    </div>
+
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+
+    <!-- Account Information -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">
+                Account Information
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label text-muted">
+                        Username
+                    </label>
+
+                    <div>
+                        <strong>
+                            @Model.Username
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+
+                    <label class="form-label text-muted">
+                        Email
+                    </label>
+
+                    <div>
+                        <strong>
+                            @Model.Email
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <label class="form-label text-muted">
+                        Account Role
+                    </label>
+
+                    <div>
+                        <span class="badge bg-primary">
+                            @Model.Role
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Security -->
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Security
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between
+                        align-items-center">
+
+                <div>
+
+                    <h6 class="mb-1">
+                        Change Password
+                    </h6>
+
+                    <p class="text-muted mb-0">
+                        Update your account password.
+                    </p>
+
+                </div>
+
+
+                <a asp-controller="Settings"
+                   asp-action="ChangePassword"
+                   class="btn btn-outline-primary">
+                    Change Password
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Future Settings -->
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <h5 class="mb-0">
+                Other Settings
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="list-group">
+
+                <div class="list-group-item
+                            d-flex justify-content-between">
+
+                    <div>
+                        <strong>
+                            Profile Information
+                        </strong>
+
+                        <br />
+
+                        <small class="text-muted">
+                            Update your personal information.
+                        </small>
+                    </div>
+
+                    <span class="badge bg-secondary">
+                        Coming Soon
+                    </span>
+
+                </div>
+
+
+                <div class="list-group-item
+                            d-flex justify-content-between">
+
+                    <div>
+                        <strong>
+                            Notification Preferences
+                        </strong>
+
+                        <br />
+
+                        <small class="text-muted">
+                            Manage order and account notifications.
+                        </small>
+                    </div>
+
+                    <span class="badge bg-secondary">
+                        Coming Soon
+                    </span>
+
+                </div>
+
+
+                <div class="list-group-item
+                            d-flex justify-content-between">
+
+                    <div>
+                        <strong>
+                            Login & Security
+                        </strong>
+
+                        <br />
+
+                        <small class="text-muted">
+                            Manage login and account security.
+                        </small>
+                    </div>
+
+                    <span class="badge bg-secondary">
+                        Coming Soon
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

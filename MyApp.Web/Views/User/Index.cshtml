@@ -1,0 +1,574 @@
+﻿@model IEnumerable<MyApp.Web.Models.User>
+
+@{
+    ViewData["Title"] = "User Management";
+
+    var users = Model.ToList();
+    var totalUsers = users.Count;
+    var adminUsers = users.Count(x => x.Role == "Admin");
+    var regularUsers = users.Count(x => x.Role == "User");
+}
+
+<div class="container-fluid py-4">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="user-page-header mb-4">
+
+        <div>
+            <div class="d-flex align-items-center gap-3">
+
+                <div class="user-page-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+
+                <div>
+                    <h2 class="fw-bold mb-1">
+                        User Management
+                    </h2>
+
+                    <p class="text-muted mb-0">
+                        Manage users, roles and account access.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <div>
+
+            <a asp-controller="User"
+               asp-action="Create"
+               class="btn btn-primary user-add-btn">
+
+                <i class="bi bi-person-plus-fill me-2"></i>
+                Add User
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= STATISTICS ================= -->
+
+    <div class="row g-3 mb-4">
+
+        <!-- Total Users -->
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="user-stat-card">
+
+                <div class="user-stat-icon total">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+
+                <div class="user-stat-content">
+
+                    <span>Total Users</span>
+
+                    <h3>
+                        @totalUsers
+                    </h3>
+
+                    <small>
+                        All registered accounts
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Admin -->
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="user-stat-card">
+
+                <div class="user-stat-icon admin">
+                    <i class="bi bi-shield-fill-check"></i>
+                </div>
+
+                <div class="user-stat-content">
+
+                    <span>Administrators</span>
+
+                    <h3>
+                        @adminUsers
+                    </h3>
+
+                    <small>
+                        Users with admin access
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Regular Users -->
+
+        <div class="col-xl-4 col-md-6">
+
+            <div class="user-stat-card">
+
+                <div class="user-stat-icon regular">
+                    <i class="bi bi-person-check-fill"></i>
+                </div>
+
+                <div class="user-stat-content">
+
+                    <span>Regular Users</span>
+
+                    <h3>
+                        @regularUsers
+                    </h3>
+
+                    <small>
+                        Standard application users
+                    </small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= SEARCH / FILTER ================= -->
+
+    <div class="user-filter-card mb-4">
+
+        <div class="user-filter-header">
+
+            <div>
+
+                <h5 class="mb-1 fw-bold">
+                    <i class="bi bi-funnel me-2"></i>
+                    Search & Filter
+                </h5>
+
+                <small class="text-muted">
+                    Find users by username, email or role.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <form asp-controller="User"
+              asp-action="Index"
+              method="get">
+
+            <div class="row g-3">
+
+                <!-- Search -->
+
+                <div class="col-lg-7">
+
+                    <label class="form-label">
+                        Search
+                    </label>
+
+                    <div class="user-search-box">
+
+                        <i class="bi bi-search"></i>
+
+                        <input type="text"
+                               name="search"
+                               value="@Context.Request.Query["search"]"
+                               placeholder="Search username or email..."
+                               class="form-control" />
+
+                    </div>
+
+                </div>
+
+
+                <!-- Role -->
+
+                <div class="col-lg-3">
+
+                    <label class="form-label">
+                        Role
+                    </label>
+
+                    <select name="role"
+                            class="form-select">
+
+                        <option value="">
+                            All Roles
+                        </option>
+
+                        @if (Context.Request.Query["role"] == "Admin")
+                        {
+                            <option value="Admin" selected>
+                                Admin
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="Admin">
+                                Admin
+                            </option>
+                        }
+
+                        @if (Context.Request.Query["role"] == "User")
+                        {
+                            <option value="User" selected>
+                                User
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="User">
+                                User
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- Buttons -->
+
+                <div class="col-lg-2 d-flex align-items-end gap-2">
+
+                    <button type="submit"
+                            class="btn btn-dark flex-grow-1">
+
+                        <i class="bi bi-search me-1"></i>
+                        Search
+
+                    </button>
+
+                    <a asp-controller="User"
+                       asp-action="Index"
+                       class="btn btn-light border"
+                       title="Clear Filter">
+
+                        <i class="bi bi-x-lg"></i>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- ================= USER TABLE ================= -->
+
+    <div class="user-table-card">
+
+        <!-- Table Header -->
+
+        <div class="user-table-header">
+
+            <div>
+
+                <h5 class="fw-bold mb-1">
+                    All Users
+                </h5>
+
+                <span class="text-muted">
+                    @totalUsers users found
+                </span>
+
+            </div>
+
+            <div class="user-table-header-right">
+
+                <span class="user-result-count">
+                    <i class="bi bi-person-lines-fill me-1"></i>
+                    @totalUsers
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- Table -->
+
+        <div class="table-responsive">
+
+            <table class="table user-table align-middle mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            User
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Role
+                        </th>
+
+                        <th>
+                            Account
+                        </th>
+
+                        <th class="text-end">
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    @if (!users.Any())
+                    {
+                        <tr>
+
+                            <td colspan="6">
+
+                                <div class="user-empty-state">
+
+                                    <div class="user-empty-icon">
+                                        <i class="bi bi-person-x"></i>
+                                    </div>
+
+                                    <h5>
+                                        No users found
+                                    </h5>
+
+                                    <p>
+                                        No users match your current search or filter.
+                                    </p>
+
+                                    <a asp-controller="User"
+                                       asp-action="Index"
+                                       class="btn btn-outline-primary">
+
+                                        Clear Filters
+
+                                    </a>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var user in users)
+                        {
+                            <tr>
+
+                                <!-- ID -->
+
+                                <td>
+
+                                    <span class="user-number">
+                                        #@user.Id
+                                    </span>
+
+                                </td>
+
+
+                                <!-- USER -->
+
+                                <td>
+
+                                    <div class="user-profile">
+
+                                        <div class="user-avatar">
+
+                                            @if (!string.IsNullOrWhiteSpace(user.Username))
+                                            {
+                                                @user.Username.Substring(0, 1).ToUpper()
+                                            }
+                                            else
+                                            {
+                                                <text>U</text>
+                                            }
+
+                                        </div>
+
+                                        <div>
+
+                                            <div class="user-profile-name">
+                                                @user.Username
+                                            </div>
+
+                                            <small class="text-muted">
+                                                MyApp User
+                                            </small>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- EMAIL -->
+
+                                <td>
+
+                                    @if (!string.IsNullOrWhiteSpace(user.Email))
+                                    {
+                                        <div class="user-email">
+
+                                            <i class="bi bi-envelope"></i>
+
+                                            <span>
+                                                @user.Email
+                                            </span>
+
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            No email
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- ROLE -->
+
+                                <td>
+
+                                    @if (user.Role == "Admin")
+                                    {
+                                        <span class="user-role-badge admin">
+
+                                            <i class="bi bi-shield-fill-check"></i>
+
+                                            Admin
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="user-role-badge user">
+
+                                            <i class="bi bi-person-fill"></i>
+
+                                            User
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- ACCOUNT -->
+
+                                <td>
+
+                                    <span class="account-status">
+
+                                        <span class="status-dot"></span>
+
+                                        Active
+
+                                    </span>
+
+                                </td>
+
+
+                                <!-- ACTIONS -->
+
+                                <td class="text-end">
+
+                                    <div class="user-action-buttons">
+
+                                        @* LOGIN AS USER *@
+
+                                        @if (user.Role != "Admin")
+                                        {
+                                            <form asp-controller="User"
+                                                  asp-action="LoginAsUser"
+                                                  asp-route-id="@user.Id"
+                                                  method="post"
+                                                  class="d-inline">
+
+                                                @Html.AntiForgeryToken()
+
+                                                <button type="submit"
+                                                        class="user-action-btn login-user"
+                                                        title="Login as User">
+
+                                                    <i class="bi bi-person-switch"></i>
+
+                                                </button>
+
+                                            </form>
+                                        }
+
+
+                                        @* EDIT *@
+
+                                        <a asp-controller="User"
+                                           asp-action="Edit"
+                                           asp-route-id="@user.Id"
+                                           class="user-action-btn edit-user"
+                                           title="Edit User">
+
+                                            <i class="bi bi-pencil"></i>
+
+                                        </a>
+
+
+                                        @* DELETE *@
+
+                                        <a asp-controller="User"
+                                           asp-action="Delete"
+                                           asp-route-id="@user.Id"
+                                           class="user-action-btn delete-user"
+                                           title="Delete User">
+
+                                            <i class="bi bi-trash"></i>
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

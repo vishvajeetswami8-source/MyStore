@@ -1,0 +1,442 @@
+﻿@model MyApp.Web.Models.Cart
+
+@{
+    ViewData["Title"] = "My Cart";
+
+    var items = Model.Items ?? new List<MyApp.Web.Models.CartItem>();
+
+    var subtotal = items.Sum(x =>
+        (x.Product?.Price ?? 0) * x.Quantity);
+}
+
+<div class="cart-page">
+
+    <!-- =================================
+         HEADER
+    ================================== -->
+
+    <div class="cart-page-header">
+
+        <div>
+            <div class="cart-eyebrow">
+                <i class="bi bi-cart3"></i>
+                MY SHOPPING CART
+            </div>
+
+            <h1>Shopping Cart</h1>
+
+            <p>
+                Review your items before placing your order.
+            </p>
+        </div>
+
+        <div class="cart-item-count">
+            <i class="bi bi-bag"></i>
+
+            <span>
+                @items.Sum(x => x.Quantity)
+                @(items.Sum(x => x.Quantity) == 1 ? "Item" : "Items")
+            </span>
+        </div>
+
+    </div>
+
+
+    @if (items.Any())
+    {
+        <div class="cart-layout">
+
+            <!-- =================================
+                 CART ITEMS
+            ================================== -->
+
+            <div class="cart-items-section">
+
+                <div class="cart-section-card">
+
+                    <div class="cart-section-header">
+
+                        <div>
+                            <h2>Cart Items</h2>
+
+                            <p>
+                                @items.Count()
+                                @(items.Count() == 1 ? "product" : "products")
+                                in your cart
+                            </p>
+                        </div>
+
+                        <form asp-controller="Cart"
+                              asp-action="Clear"
+                              method="post"
+                              class="clear-cart-form">
+
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="clear-cart-btn"
+                                    onclick="return confirm('Are you sure you want to remove all items from your cart?');">
+
+                                <i class="bi bi-trash3"></i>
+                                Clear Cart
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+
+                    <!-- Items -->
+
+                    <div class="cart-items">
+
+                        @foreach (var item in items)
+                        {
+                            var product = item.Product;
+
+                            if (product == null)
+                            {
+                                continue;
+                            }
+
+                            var lineTotal =
+                            product.Price * item.Quantity;
+
+                            <div class="cart-item">
+
+                                <!-- Product Image -->
+
+                                <div class="cart-product-image">
+
+                                    @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                                    {
+                                        <img src="@product.ImageUrl"
+                                             alt="@product.Name" />
+                                    }
+                                    else
+                                    {
+                                        <div class="cart-image-placeholder">
+
+                                            <i class="bi bi-image"></i>
+
+                                        </div>
+                                    }
+
+                                </div>
+
+
+                                <!-- Product Details -->
+
+                                <div class="cart-product-details">
+
+                                    @if (product.SubCategory != null)
+                                    {
+                                        <span class="cart-product-category">
+                                            @product.SubCategory.Name
+                                        </span>
+                                    }
+
+                                    <h3>
+                                        @product.Name
+                                    </h3>
+
+                                    <div class="cart-unit-price">
+                                        ₹@product.Price.ToString("N2")
+                                        <span>per item</span>
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Quantity -->
+
+                                <div class="cart-quantity-section">
+
+                                    <span class="cart-label">
+                                        Quantity
+                                    </span>
+
+                                    <div class="quantity-control">
+
+                                        <form asp-controller="Cart"
+                                              asp-action="Decrease"
+                                              asp-route-productId="@product.Id"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="quantity-btn">
+
+                                                <i class="bi bi-dash"></i>
+
+                                            </button>
+
+                                        </form>
+
+
+                                        <span class="quantity-value">
+                                            @item.Quantity
+                                        </span>
+
+
+                                        <form asp-controller="Cart"
+                                              asp-action="Increase"
+                                              asp-route-productId="@product.Id"
+                                              method="post">
+
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="quantity-btn">
+
+                                                <i class="bi bi-plus"></i>
+
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Total -->
+
+                                <div class="cart-line-total">
+
+                                    <span class="cart-label">
+                                        Total
+                                    </span>
+
+                                    <strong>
+                                        ₹@lineTotal.ToString("N2")
+                                    </strong>
+
+                                </div>
+
+
+                                <!-- Remove -->
+
+                                <form asp-controller="Cart"
+                                      asp-action="Remove"
+                                      asp-route-productId="@product.Id"
+                                      method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <button type="submit"
+                                            class="remove-cart-btn"
+                                            title="Remove item"
+                                            onclick="return confirm('Remove this item from your cart?');">
+
+                                        <i class="bi bi-trash3"></i>
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+                        }
+
+                    </div>
+
+                </div>
+
+
+                <!-- Continue Shopping -->
+
+                <div class="cart-continue-wrapper">
+
+                    <a asp-controller="Product"
+                       asp-action="Index"
+                       class="continue-shopping-btn">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Continue Shopping
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================
+                 ORDER SUMMARY
+            ================================== -->
+
+            <div class="cart-summary-section">
+
+                <div class="cart-summary-card">
+
+                    <div class="summary-header">
+
+                        <h2>Order Summary</h2>
+
+                        <i class="bi bi-receipt"></i>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span>
+                            Subtotal
+                        </span>
+
+                        <strong>
+                            ₹@subtotal.ToString("N2")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span>
+                            Delivery
+                        </span>
+
+                        <span class="free-delivery">
+                            FREE
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-row">
+
+                        <span>
+                            Tax
+                        </span>
+
+                        <span>
+                            Included
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-divider"></div>
+
+
+                    <div class="summary-total">
+
+                        <span>
+                            Total
+                        </span>
+
+                        <strong>
+                            ₹@subtotal.ToString("N2")
+                        </strong>
+
+                    </div>
+
+
+                    <!-- Checkout -->
+
+                    <a asp-controller="Order"
+                       asp-action="Checkout"
+                       class="checkout-btn">
+
+                        Proceed to Checkout
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+
+                    <!-- Security -->
+
+                    <div class="checkout-security">
+
+                        <div>
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+
+                        <div>
+                            <strong>Secure Checkout</strong>
+
+                            <span>
+                                Your information is protected.
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Benefits -->
+
+                <div class="cart-benefits">
+
+                    <div class="cart-benefit">
+
+                        <i class="bi bi-truck"></i>
+
+                        <div>
+                            <strong>Fast Delivery</strong>
+                            <span>Quick & reliable delivery</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="cart-benefit">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        <div>
+                            <strong>Secure Payment</strong>
+                            <span>Safe and secure checkout</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+    else
+    {
+        <!-- =================================
+             EMPTY CART
+        ================================== -->
+
+        <div class="empty-cart">
+
+            <div class="empty-cart-icon">
+
+                <i class="bi bi-cart-x"></i>
+
+            </div>
+
+            <h2>Your Cart is Empty</h2>
+
+            <p>
+                Looks like you haven't added anything to your cart yet.
+                Explore our products and find something you love.
+            </p>
+
+            <a asp-controller="Product"
+               asp-action="Index"
+               class="start-shopping-btn">
+
+                <i class="bi bi-bag"></i>
+
+                Start Shopping
+
+                <i class="bi bi-arrow-right"></i>
+
+            </a>
+
+        </div>
+    }
+
+</div>

@@ -1,0 +1,447 @@
+﻿@model MyApp.Web.Models.Order
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<div class="confirmation-page">
+
+    <!-- Success Section -->
+    <div class="confirmation-success">
+
+        <div class="success-icon">
+            <i class="bi bi-check-lg"></i>
+        </div>
+
+        <span class="success-label">
+            ORDER PLACED SUCCESSFULLY
+        </span>
+
+        <h1>Thank You for Your Order!</h1>
+
+        <p>
+            Your order has been placed successfully.
+            We have received your order and will process it shortly.
+        </p>
+
+        <div class="order-number">
+            <span>Order Number</span>
+            <strong>#@Model.Id</strong>
+        </div>
+
+    </div>
+
+
+    <!-- Order Status -->
+    <div class="status-card">
+
+        <div class="status-step active">
+            <div class="status-icon">
+                <i class="bi bi-check-lg"></i>
+            </div>
+
+            <div>
+                <strong>Order Placed</strong>
+                <span>@Model.OrderDate.ToString("dd MMM yyyy, hh:mm tt")</span>
+            </div>
+        </div>
+
+
+        <div class="status-line"></div>
+
+
+        <div class="status-step
+             @(Model.Status == "Confirmed" ||
+                            Model.Status == "Shipped" ||
+                            Model.Status == "Delivered"
+                            ? "active" : "")">
+
+            <div class="status-icon">
+                <i class="bi bi-box-seam"></i>
+            </div>
+
+            <div>
+                <strong>Confirmed</strong>
+                <span>
+                    @(Model.Status == "Pending"
+                                        ? "Waiting for confirmation"
+                                        : "Order confirmed")
+                </span>
+            </div>
+
+        </div>
+
+
+        <div class="status-line"></div>
+
+
+        <div class="status-step
+             @(Model.Status == "Shipped" ||
+                            Model.Status == "Delivered"
+                            ? "active" : "")">
+
+            <div class="status-icon">
+                <i class="bi bi-truck"></i>
+            </div>
+
+            <div>
+                <strong>Shipped</strong>
+                <span>
+                    @(Model.Status == "Shipped" ||
+                                        Model.Status == "Delivered"
+                                        ? "Your order is on the way"
+                                        : "Not shipped yet")
+                </span>
+            </div>
+
+        </div>
+
+
+        <div class="status-line"></div>
+
+
+        <div class="status-step
+             @(Model.Status == "Delivered"
+                            ? "active" : "")">
+
+            <div class="status-icon">
+                <i class="bi bi-house-check"></i>
+            </div>
+
+            <div>
+                <strong>Delivered</strong>
+                <span>
+                    @(Model.Status == "Delivered"
+                                        ? "Order delivered"
+                                        : "Awaiting delivery")
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- LEFT -->
+        <div class="col-lg-7">
+
+            <!-- Ordered Items -->
+            <div class="confirmation-card">
+
+                <div class="confirmation-card-header">
+
+                    <div class="card-title-icon">
+                        <i class="bi bi-bag-check"></i>
+                    </div>
+
+                    <div>
+                        <h3>Order Items</h3>
+                        <p>
+                            @Model.OrderItems.Count item(s) in this order
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="confirmation-items">
+
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        <div class="confirmation-item">
+
+                            <div class="confirmation-product-image">
+
+                                @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                {
+                                    <img src="@item.Product.ImageUrl"
+                                         alt="@item.Product.Name" />
+                                }
+                                else
+                                {
+                                    <div class="confirmation-no-image">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                }
+
+                            <span class="confirmation-quantity">
+                                @item.Quantity
+                            </span>
+
+                        </div>
+
+
+                        <div class="confirmation-product-details">
+
+                            <h4>
+                                @item.Product?.Name
+                            </h4>
+
+                            <span>
+                                ₹@item.UnitPrice.ToString("N2")
+                                × @item.Quantity
+                            </span>
+
+                        </div>
+
+
+                        <div class="confirmation-item-total">
+
+                            ₹@((item.UnitPrice * item.Quantity)
+                                                        .ToString("N2"))
+
+                        </div>
+
+                        </div>
+                                        }
+
+                </div>
+
+            </div>
+
+
+            <!-- Delivery Address -->
+            <div class="confirmation-card">
+
+                <div class="confirmation-card-header">
+
+                    <div class="card-title-icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+
+                    <div>
+                        <h3>Delivery Address</h3>
+                        <p>Shipping information</p>
+                    </div>
+
+                </div>
+
+
+                <div class="address-box">
+
+                    <div class="address-icon">
+                        <i class="bi bi-house"></i>
+                    </div>
+
+                    <div class="address-content">
+
+                        <strong>
+                            Shipping Address
+                        </strong>
+
+                        <p>
+                            @Model.ShippingAddress
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT -->
+        <div class="col-lg-5">
+
+            <!-- Order Summary -->
+            <div class="confirmation-summary">
+
+                <div class="summary-heading">
+
+                    <div>
+                        <span>ORDER SUMMARY</span>
+                        <h3>Payment Details</h3>
+                    </div>
+
+                    <i class="bi bi-receipt"></i>
+
+                </div>
+
+
+                <div class="summary-detail-row">
+
+                    <span>Order ID</span>
+
+                    <strong>
+                        #@Model.Id
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-detail-row">
+
+                    <span>Order Date</span>
+
+                    <strong>
+                        @Model.OrderDate.ToString("dd MMM yyyy")
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-detail-row">
+
+                    <span>Status</span>
+
+                    <span class="confirmation-status">
+                        @Model.Status
+                    </span>
+
+                </div>
+
+
+                <div class="summary-divider"></div>
+
+
+                <div class="summary-detail-row">
+
+                    <span>Subtotal</span>
+
+                    <strong>
+                        ₹@Model.TotalAmount.ToString("N2")
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-detail-row">
+
+                    <span>Delivery</span>
+
+                    <strong class="free-delivery">
+                        FREE
+                    </strong>
+
+                </div>
+
+
+                <div class="summary-divider"></div>
+
+
+                <div class="confirmation-total">
+
+                    <span>Total Amount</span>
+
+                    <strong>
+                        ₹@Model.TotalAmount.ToString("N2")
+                    </strong>
+
+                </div>
+
+
+                <div class="payment-confirmed">
+
+                    <i class="bi bi-shield-check"></i>
+
+                    <div>
+                        <strong>Payment Method</strong>
+                        <span>Cash on Delivery</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- What's Next -->
+            <div class="next-card">
+
+                <div class="next-icon">
+                    <i class="bi bi-info-circle"></i>
+                </div>
+
+                <div>
+                    <strong>What's next?</strong>
+
+                    <p>
+                        You can track your order status from
+                        <b>My Orders</b>.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="confirmation-actions">
+
+                <a asp-controller="Order"
+                   asp-action="MyOrders"
+                   class="primary-confirmation-btn">
+
+                    <i class="bi bi-box-seam"></i>
+
+                    View My Orders
+
+                </a>
+
+
+                <a asp-controller="Product"
+                   asp-action="Index"
+                   class="secondary-confirmation-btn">
+
+                    <i class="bi bi-arrow-left"></i>
+
+                    Continue Shopping
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Bottom Benefits -->
+    <div class="confirmation-benefits">
+
+        <div class="confirmation-benefit">
+
+            <div>
+                <i class="bi bi-truck"></i>
+            </div>
+
+            <section>
+                <strong>Fast Delivery</strong>
+                <span>Quick and reliable shipping</span>
+            </section>
+
+        </div>
+
+
+        <div class="confirmation-benefit">
+
+            <div>
+                <i class="bi bi-shield-check"></i>
+            </div>
+
+            <section>
+                <strong>Secure Shopping</strong>
+                <span>Your order details are protected</span>
+            </section>
+
+        </div>
+
+
+        <div class="confirmation-benefit">
+
+            <div>
+                <i class="bi bi-headset"></i>
+            </div>
+
+            <section>
+                <strong>Need Help?</strong>
+                <span>Contact our support team</span>
+            </section>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,453 @@
+﻿@model MyApp.Web.Models.Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="order-details-page">
+
+    <!-- Header -->
+    <div class="order-details-header">
+
+        <div>
+            <span class="order-details-eyebrow">
+                <i class="bi bi-receipt"></i>
+                ORDER DETAILS
+            </span>
+
+            <h1>Order #@Model.Id</h1>
+
+            <p>
+                Placed on @Model.OrderDate.ToString("dd MMM yyyy, hh:mm tt")
+            </p>
+        </div>
+
+        <a asp-controller="Order"
+           asp-action="MyOrders"
+           class="back-orders-btn">
+
+            <i class="bi bi-arrow-left"></i>
+            Back to My Orders
+
+        </a>
+
+    </div>
+
+
+    <div class="row g-4">
+
+        <!-- LEFT -->
+        <div class="col-lg-8">
+
+            <!-- Order Status -->
+            <div class="order-details-card">
+
+                <div class="details-card-heading">
+
+                    <div class="details-heading-icon">
+                        <i class="bi bi-truck"></i>
+                    </div>
+
+                    <div>
+                        <h3>Order Status</h3>
+                        <p>Current status of your order</p>
+                    </div>
+
+                    <span class="order-status-badge">
+                        @Model.Status
+                    </span>
+
+                </div>
+
+
+                <div class="order-status-timeline">
+
+                    <!-- Placed -->
+                    <div class="timeline-item active">
+
+                        <div class="timeline-dot">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+
+                        <div class="timeline-content">
+                            <strong>Order Placed</strong>
+
+                            <span>
+                                Your order has been successfully placed.
+                            </span>
+
+                            <small>
+                                @Model.OrderDate.ToString("dd MMM yyyy, hh:mm tt")
+                            </small>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Confirmed -->
+                    <div class="timeline-item
+                         @(Model.Status == "Confirmed" ||
+                                                    Model.Status == "Shipped" ||
+                                                    Model.Status == "Delivered"
+                                                    ? "active" : "")">
+
+                        <div class="timeline-dot">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+
+                        <div class="timeline-content">
+                            <strong>Order Confirmed</strong>
+
+                            <span>
+                                @(Model.Status == "Pending"
+                                                                ? "Waiting for order confirmation."
+                                                                : "Your order has been confirmed.")
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Shipped -->
+                    <div class="timeline-item
+                         @(Model.Status == "Shipped" ||
+                                                    Model.Status == "Delivered"
+                                                    ? "active" : "")">
+
+                        <div class="timeline-dot">
+                            <i class="bi bi-truck"></i>
+                        </div>
+
+                        <div class="timeline-content">
+                            <strong>Shipped</strong>
+
+                            <span>
+                                @(Model.Status == "Shipped" ||
+                                                                Model.Status == "Delivered"
+                                                                ? "Your order is on the way."
+                                                                : "Your order has not been shipped yet.")
+                            </span>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Delivered -->
+                    <div class="timeline-item
+                         @(Model.Status == "Delivered"
+                                                    ? "active" : "")">
+
+                        <div class="timeline-dot">
+                            <i class="bi bi-house-check"></i>
+                        </div>
+
+                        <div class="timeline-content">
+                            <strong>Delivered</strong>
+
+                            <span>
+                                @(Model.Status == "Delivered"
+                                                                ? "Your order has been delivered."
+                                                                : "Waiting for delivery.")
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Ordered Products -->
+            <div class="order-details-card">
+
+                <div class="details-card-heading">
+
+                    <div class="details-heading-icon">
+                        <i class="bi bi-bag-check"></i>
+                    </div>
+
+                    <div>
+                        <h3>Order Items</h3>
+
+                        <p>
+                            @Model.OrderItems.Count item(s)
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="order-product-list">
+
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        <div class="order-product">
+
+                            <!-- Image -->
+                            <div class="order-product-image">
+
+                                @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
+                                {
+                                    <img src="@item.Product.ImageUrl"
+                                         alt="@item.Product.Name" />
+                                }
+                                else
+                                {
+                                    <div class="order-no-image">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                }
+
+                        </div>
+
+
+                        <!-- Details -->
+                        <div class="order-product-info">
+
+                            <h4>
+                                @item.Product?.Name
+                            </h4>
+
+                            <span>
+                                Unit Price:
+                                ₹@item.UnitPrice.ToString("N2")
+                            </span>
+
+                            <span>
+                                Quantity:
+                                @item.Quantity
+                            </span>
+
+                        </div>
+
+
+                        <!-- Total -->
+                        <div class="order-product-total">
+
+                            <span>Total</span>
+
+                            <strong>
+                                ₹@((item.UnitPrice * item.Quantity)
+                                                                .ToString("N2"))
+                            </strong>
+
+                            </div>
+
+                        </div>
+                                        }
+
+                </div>
+
+            </div>
+
+
+            <!-- Shipping Address -->
+            <div class="order-details-card">
+
+                <div class="details-card-heading">
+
+                    <div class="details-heading-icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </div>
+
+                    <div>
+                        <h3>Delivery Address</h3>
+                        <p>Where your order will be delivered</p>
+                    </div>
+
+                </div>
+
+
+                <div class="order-address">
+
+                    <div class="order-address-icon">
+                        <i class="bi bi-house"></i>
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            Shipping Address
+                        </strong>
+
+                        <p>
+                            @Model.ShippingAddress
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT -->
+        <div class="col-lg-4">
+
+            <!-- Summary -->
+            <div class="order-summary-details">
+
+                <div class="order-summary-title">
+
+                    <div>
+                        <span>ORDER SUMMARY</span>
+                        <h3>Payment Details</h3>
+                    </div>
+
+                    <i class="bi bi-receipt-cutoff"></i>
+
+                </div>
+
+
+                <div class="order-summary-row">
+
+                    <span>Order ID</span>
+
+                    <strong>
+                        #@Model.Id
+                    </strong>
+
+                </div>
+
+
+                <div class="order-summary-row">
+
+                    <span>Order Date</span>
+
+                    <strong>
+                        @Model.OrderDate.ToString("dd MMM yyyy")
+                    </strong>
+
+                </div>
+
+
+                <div class="order-summary-row">
+
+                    <span>Status</span>
+
+                    <span class="details-status">
+                        @Model.Status
+                    </span>
+
+                </div>
+
+
+                <div class="order-summary-divider"></div>
+
+
+                <div class="order-summary-row">
+
+                    <span>Items</span>
+
+                    <strong>
+                        @Model.OrderItems.Count
+                    </strong>
+
+                </div>
+
+
+                <div class="order-summary-row">
+
+                    <span>Delivery</span>
+
+                    <strong class="free-delivery-text">
+                        FREE
+                    </strong>
+
+                </div>
+
+
+                <div class="order-summary-divider"></div>
+
+
+                <div class="order-final-total">
+
+                    <span>Total Amount</span>
+
+                    <strong>
+                        ₹@Model.TotalAmount.ToString("N2")
+                    </strong>
+
+                </div>
+
+
+                <div class="payment-method-box">
+
+                    <div class="payment-method-icon">
+                        <i class="bi bi-cash-stack"></i>
+                    </div>
+
+                    <div>
+                        <strong>Cash on Delivery</strong>
+
+                        <span>
+                            Payment will be collected at delivery.
+                        </span>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Help -->
+            <div class="order-help-card">
+
+                <div class="order-help-icon">
+                    <i class="bi bi-headset"></i>
+                </div>
+
+                <div>
+                    <strong>Need Help?</strong>
+
+                    <p>
+                        Have an issue with this order?
+                        Our support team can help you.
+                    </p>
+
+                    <a asp-controller="Support"
+                       asp-action="Create">
+
+                        Raise Support Request
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+                </div>
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="order-detail-actions">
+
+                <a asp-controller="Product"
+                   asp-action="Index"
+                   class="order-shop-btn">
+
+                    <i class="bi bi-bag"></i>
+
+                    Continue Shopping
+
+                </a>
+
+
+                <a asp-controller="Order"
+                   asp-action="MyOrders"
+                   class="order-back-btn">
+
+                    <i class="bi bi-list-ul"></i>
+
+                    View All Orders
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

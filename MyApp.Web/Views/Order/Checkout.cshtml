@@ -1,0 +1,486 @@
+﻿@model MyApp.Web.Models.CheckoutViewModel
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<div class="checkout-page">
+
+    <!-- Page Header -->
+    <div class="checkout-header">
+        <div>
+            <span class="checkout-eyebrow">
+                <i class="bi bi-shield-check"></i> Secure Checkout
+            </span>
+
+            <h1>Complete Your Order</h1>
+
+            <p>
+                Enter your delivery details and review your order before placing it.
+            </p>
+        </div>
+
+        <a asp-controller="Cart"
+           asp-action="Index"
+           class="back-cart-btn">
+            <i class="bi bi-arrow-left"></i>
+            Back to Cart
+        </a>
+    </div>
+
+
+    <form asp-action="PlaceOrder"
+          asp-controller="Order"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <div class="row g-4">
+
+            <!-- LEFT SIDE -->
+            <div class="col-lg-7">
+
+                <!-- Delivery Information -->
+                <div class="checkout-card">
+
+                    <div class="card-heading">
+                        <div class="heading-icon">
+                            <i class="bi bi-geo-alt"></i>
+                        </div>
+
+                        <div>
+                            <h3>Delivery Information</h3>
+                            <p>Where should we deliver your order?</p>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+
+                        <!-- Full Name -->
+                        <div class="col-md-6">
+
+                            <label asp-for="FullName" class="checkout-label">
+                                Full Name
+                            </label>
+
+                            <div class="input-wrapper">
+                                <i class="bi bi-person"></i>
+
+                                <input asp-for="FullName"
+                                       class="checkout-input"
+                                       placeholder="Enter your full name" />
+                            </div>
+
+                            <span asp-validation-for="FullName"
+                                  class="validation-message"></span>
+
+                        </div>
+
+
+                        <!-- Email -->
+                        <div class="col-md-6">
+
+                            <label asp-for="Email" class="checkout-label">
+                                Email Address
+                            </label>
+
+                            <div class="input-wrapper">
+                                <i class="bi bi-envelope"></i>
+
+                                <input asp-for="Email"
+                                       class="checkout-input"
+                                       placeholder="Enter your email" />
+                            </div>
+
+                            <span asp-validation-for="Email"
+                                  class="validation-message"></span>
+
+                        </div>
+
+
+                        <!-- Phone -->
+                        <div class="col-md-6">
+
+                            <label asp-for="Phone" class="checkout-label">
+                                Phone Number
+                            </label>
+
+                            <div class="input-wrapper">
+                                <i class="bi bi-telephone"></i>
+
+                                <input asp-for="Phone"
+                                       class="checkout-input"
+                                       placeholder="Enter phone number" />
+                            </div>
+
+                            <span asp-validation-for="Phone"
+                                  class="validation-message"></span>
+
+                        </div>
+
+
+                        <!-- Pincode -->
+                        <div class="col-md-6">
+
+                            <label asp-for="Pincode" class="checkout-label">
+                                Pincode
+                            </label>
+
+                            <div class="input-wrapper">
+                                <i class="bi bi-pin-map"></i>
+
+                                <input asp-for="Pincode"
+                                       class="checkout-input"
+                                       placeholder="Enter pincode" />
+                            </div>
+
+                            <span asp-validation-for="Pincode"
+                                  class="validation-message"></span>
+
+                        </div>
+
+
+                        <!-- Address -->
+                        <div class="col-12">
+
+                            <label asp-for="Address" class="checkout-label">
+                                Address
+                            </label>
+
+                            <div class="input-wrapper textarea-wrapper">
+                                <i class="bi bi-house"></i>
+
+                                <textarea asp-for="Address"
+                                          class="checkout-input checkout-textarea"
+                                          placeholder="House number, street, area, landmark..."
+                                          rows="3"></textarea>
+                            </div>
+
+                            <span asp-validation-for="Address"
+                                  class="validation-message"></span>
+
+                        </div>
+
+
+                        <!-- City -->
+                        <div class="col-md-6">
+
+                            <label asp-for="City" class="checkout-label">
+                                City
+                            </label>
+
+                            <div class="input-wrapper">
+                                <i class="bi bi-building"></i>
+
+                                <input asp-for="City"
+                                       class="checkout-input"
+                                       placeholder="Enter city" />
+                            </div>
+
+                            <span asp-validation-for="City"
+                                  class="validation-message"></span>
+
+                        </div>
+
+
+                        <!-- State -->
+                        <div class="col-md-6">
+
+                            <label asp-for="State" class="checkout-label">
+                                State
+                            </label>
+
+                            <div class="input-wrapper">
+                                <i class="bi bi-map"></i>
+
+                                <input asp-for="State"
+                                       class="checkout-input"
+                                       placeholder="Enter state" />
+                            </div>
+
+                            <span asp-validation-for="State"
+                                  class="validation-message"></span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Payment Information -->
+                <div class="checkout-card payment-card">
+
+                    <div class="card-heading">
+
+                        <div class="heading-icon">
+                            <i class="bi bi-credit-card"></i>
+                        </div>
+
+                        <div>
+                            <h3>Payment Method</h3>
+                            <p>Choose how you want to pay</p>
+                        </div>
+
+                    </div>
+
+                    <div class="payment-option selected">
+
+                        <div class="payment-radio">
+                            <input type="radio"
+                                   checked
+                                   disabled />
+                        </div>
+
+                        <div class="payment-icon">
+                            <i class="bi bi-cash-stack"></i>
+                        </div>
+
+                        <div class="payment-info">
+                            <strong>Cash on Delivery</strong>
+
+                            <span>
+                                Pay when your order is delivered
+                            </span>
+                        </div>
+
+                        <span class="available-badge">
+                            Available
+                        </span>
+
+                    </div>
+
+
+                    <div class="payment-note">
+
+                        <i class="bi bi-info-circle"></i>
+
+                        <span>
+                            Online payment can be integrated later using
+                            a payment gateway such as Razorpay or Stripe.
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- RIGHT SIDE -->
+            <div class="col-lg-5">
+
+                <div class="order-summary-card">
+
+                    <div class="summary-header">
+
+                        <div>
+                            <span class="summary-eyebrow">
+                                Order Summary
+                            </span>
+
+                            <h3>Review Your Order</h3>
+                        </div>
+
+                        <div class="summary-cart-icon">
+                            <i class="bi bi-bag"></i>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Items -->
+                    <div class="checkout-items">
+
+                        @if (Model.Items != null && Model.Items.Any())
+                        {
+                            foreach (var item in Model.Items)
+                            {
+                                <div class="checkout-item">
+
+                                    <div class="checkout-item-image">
+
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl"
+                                                 alt="@item.ProductName" />
+                                        }
+                                        else
+                                        {
+                                            <div class="no-checkout-image">
+                                                <i class="bi bi-image"></i>
+                                            </div>
+                                        }
+
+                                        <span class="quantity-badge">
+                                            @item.Quantity
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="checkout-item-details">
+
+                                        <h4>@item.ProductName</h4>
+
+                                        <span>
+                                            ₹@item.UnitPrice.ToString("N2")
+                                            × @item.Quantity
+                                        </span>
+
+                                    </div>
+
+
+                                    <div class="checkout-item-total">
+
+                                        ₹@item.Total.ToString("N2")
+
+                                    </div>
+
+                                </div>
+                            }
+                        }
+
+                    </div>
+
+
+                    <div class="summary-divider"></div>
+
+
+                    <!-- Price -->
+                    <div class="price-row">
+
+                        <span>Subtotal</span>
+
+                        <strong>
+                            ₹@Model.TotalAmount.ToString("N2")
+                        </strong>
+
+                    </div>
+
+
+                    <div class="price-row">
+
+                        <span>Delivery</span>
+
+                        <strong class="free-text">
+                            FREE
+                        </strong>
+
+                    </div>
+
+
+                    <div class="price-row">
+
+                        <span>Tax</span>
+
+                        <span class="included-text">
+                            Included
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-divider"></div>
+
+
+                    <div class="grand-total">
+
+                        <div>
+                            <span>Total Amount</span>
+                            <small>Inclusive of applicable taxes</small>
+                        </div>
+
+                        <strong>
+                            ₹@Model.TotalAmount.ToString("N2")
+                        </strong>
+
+                    </div>
+
+
+                    <!-- Place Order -->
+                    <button type="submit"
+                            class="place-order-btn">
+
+                        <i class="bi bi-lock-fill"></i>
+
+                        Place Order
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </button>
+
+
+                    <div class="secure-message">
+
+                        <i class="bi bi-shield-check"></i>
+
+                        <span>
+                            Your order information is securely processed.
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Benefits -->
+                <div class="checkout-benefits">
+
+                    <div class="benefit-item">
+
+                        <div class="benefit-icon">
+                            <i class="bi bi-truck"></i>
+                        </div>
+
+                        <div>
+                            <strong>Fast Delivery</strong>
+                            <span>Quick and reliable shipping</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="benefit-item">
+
+                        <div class="benefit-icon">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+
+                        <div>
+                            <strong>Secure Checkout</strong>
+                            <span>Your information is protected</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="benefit-item">
+
+                        <div class="benefit-icon">
+                            <i class="bi bi-headset"></i>
+                        </div>
+
+                        <div>
+                            <strong>Customer Support</strong>
+                            <span>We're here to help</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+}

@@ -1,0 +1,461 @@
+﻿@model IEnumerable<MyApp.Web.Models.Product>
+
+@{
+    ViewData["Title"] = "Product Management";
+
+    var products = Model?.ToList() ?? new List<MyApp.Web.Models.Product>();
+
+    var totalProducts = products.Count;
+    var activeProducts = products.Count(x => x.IsActive);
+    var inactiveProducts = products.Count(x => !x.IsActive);
+    var categories = products
+        .Where(x => x.SubCategory?.Category != null)
+        .Select(x => x.SubCategory!.Category!.Name)
+        .Distinct()
+        .Count();
+
+    var search = ViewBag.Search as string;
+    var selectedSubCategory = ViewBag.SelectedSubCategory as int?;
+}
+
+<div class="product-manage-page">
+
+    <!-- Header -->
+    <div class="product-manage-header">
+
+        <div>
+            <span class="product-manage-eyebrow">
+                <i class="bi bi-box-seam"></i>
+                ADMINISTRATION
+            </span>
+
+            <h1>Product Management</h1>
+
+            <p>
+                Manage your products, pricing, categories and availability.
+            </p>
+        </div>
+
+        <div class="product-manage-header-actions">
+
+            <a asp-controller="Category"
+               asp-action="Manage"
+               class="manage-secondary-btn">
+
+                <i class="bi bi-grid-3x3-gap"></i>
+                Categories
+
+            </a>
+
+            <a asp-controller="Product"
+               asp-action="Create"
+               class="manage-primary-btn">
+
+                <i class="bi bi-plus-lg"></i>
+                Add Product
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Statistics -->
+    <div class="product-stats">
+
+        <div class="product-stat-card">
+
+            <div class="product-stat-icon total">
+                <i class="bi bi-box-seam"></i>
+            </div>
+
+            <div>
+                <span>Total Products</span>
+                <strong>@totalProducts</strong>
+            </div>
+
+        </div>
+
+
+        <div class="product-stat-card">
+
+            <div class="product-stat-icon active">
+                <i class="bi bi-check-circle"></i>
+            </div>
+
+            <div>
+                <span>Active Products</span>
+                <strong>@activeProducts</strong>
+            </div>
+
+        </div>
+
+
+        <div class="product-stat-card">
+
+            <div class="product-stat-icon inactive">
+                <i class="bi bi-eye-slash"></i>
+            </div>
+
+            <div>
+                <span>Inactive Products</span>
+                <strong>@inactiveProducts</strong>
+            </div>
+
+        </div>
+
+
+        <div class="product-stat-card">
+
+            <div class="product-stat-icon category">
+                <i class="bi bi-tags"></i>
+            </div>
+
+            <div>
+                <span>Categories</span>
+                <strong>@categories</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Search / Filter -->
+    <div class="product-filter-card">
+
+        <form asp-controller="Product"
+              asp-action="Manage"
+              method="get">
+
+            <div class="product-filter-grid">
+
+                <!-- Search -->
+                <div class="product-search-wrapper">
+
+                    <i class="bi bi-search"></i>
+
+                    <input type="text"
+                           name="search"
+                           value="@search"
+                           placeholder="Search by product name or description..." />
+
+                </div>
+
+
+                <!-- Category -->
+                <div>
+
+                    <select name="subCategoryId"
+                            class="product-filter-select">
+
+                        <option value="">
+                            All Categories
+                        </option>
+
+                        @if (ViewBag.SubCategories != null)
+                        {
+                            foreach (var subCategory in
+                            ViewBag.SubCategories as IEnumerable<MyApp.Web.Models.SubCategory>)
+                            {
+                                if (selectedSubCategory == subCategory.Id)
+                                {
+                                    <option value="@subCategory.Id" selected>
+                                        @subCategory.Category?.Name
+                                        → @subCategory.Name
+                                    </option>
+                                }
+                                else
+                                {
+                                    <option value="@subCategory.Id">
+                                        @subCategory.Category?.Name
+                                        → @subCategory.Name
+                                    </option>
+                                }
+                            }
+                        }
+
+                    </select>
+
+                </div>
+
+
+                <!-- Search Button -->
+                <button type="submit"
+                        class="product-filter-btn">
+
+                    <i class="bi bi-search"></i>
+                    Search
+
+                </button>
+
+
+                <!-- Clear -->
+                <a asp-controller="Product"
+                   asp-action="Manage"
+                   class="product-clear-btn">
+
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Clear
+
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- Products Table -->
+    <div class="product-manage-card">
+
+        <div class="product-table-header">
+
+            <div>
+                <h3>All Products</h3>
+
+                <p>
+                    Showing @products.Count product(s)
+                </p>
+            </div>
+
+            <span class="product-count-badge">
+                @products.Count Products
+            </span>
+
+        </div>
+
+
+        @if (products.Any())
+        {
+            <div class="product-table-wrapper">
+
+                <table class="product-manage-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>Product</th>
+
+                            <th>Category</th>
+
+                            <th>Price</th>
+
+                            <th>Status</th>
+
+                            <th>Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @{
+                            var rowNumber = 1;
+                        }
+
+                        @foreach (var product in products)
+                        {
+                            <tr>
+
+                                <!-- Number -->
+                                <td class="product-number">
+                                    @rowNumber
+                                </td>
+
+
+                                <!-- Product -->
+                                <td>
+
+                                    <div class="manage-product-info">
+
+                                        <div class="manage-product-image">
+
+                                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                            {
+                                                <img src="@product.ImageUrl"
+                                                     alt="@product.Name" />
+                                            }
+                                            else
+                                            {
+                                                <div class="manage-no-image">
+                                                    <i class="bi bi-image"></i>
+                                                </div>
+                                            }
+
+                                    </div>
+
+
+                                    <div class="manage-product-text">
+
+                                        <strong>
+                                            @product.Name
+                                        </strong>
+
+                                        <span>
+                                            @(product.Description?.Length > 55
+                                                                                    ? product.Description.Substring(0, 55) + "..."
+                                                                                    : product.Description)
+                                    </span>
+
+                                        </div>
+
+                                    </div>
+
+                                </td>
+
+
+                                <!-- Category -->
+                                <td>
+
+                            @if (product.SubCategory != null)
+                                    {
+                                        <div class="manage-category">
+
+                                            <strong>
+                                                @product.SubCategory.Category?.Name
+                                            </strong>
+
+                                            <span>
+                                                @product.SubCategory.Name
+                                            </span>
+
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <span class="no-category">
+                                            No Category
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Price -->
+                                <td>
+
+                                    <span class="manage-price">
+                                        ₹@product.Price.ToString("N2")
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Status -->
+                                <td>
+
+                                    @if (product.IsActive)
+                                    {
+                                        <span class="product-status active-status">
+
+                                            <i class="bi bi-check-circle-fill"></i>
+                                            Active
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="product-status inactive-status">
+
+                                            <i class="bi bi-x-circle-fill"></i>
+                                            Inactive
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Actions -->
+                                <td>
+
+                                    <div class="product-actions">
+
+                                        <!-- View -->
+                                        <a asp-controller="Product"
+                                           asp-action="Details"
+                                           asp-route-id="@product.Id"
+                                           class="product-action view-action"
+                                           title="View Product">
+
+                                            <i class="bi bi-eye"></i>
+
+                                        </a>
+
+
+                                        <!-- Edit -->
+                                        <a asp-controller="Product"
+                                           asp-action="Edit"
+                                           asp-route-id="@product.Id"
+                                           class="product-action edit-action"
+                                           title="Edit Product">
+
+                                            <i class="bi bi-pencil"></i>
+
+                                        </a>
+
+
+                                        <!-- Delete -->
+                                        <a asp-controller="Product"
+                                           asp-action="Delete"
+                                           asp-route-id="@product.Id"
+                                           class="product-action delete-action"
+                                           title="Delete Product">
+
+                                            <i class="bi bi-trash3"></i>
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            rowNumber++;
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+        else
+        {
+            <!-- Empty State -->
+            <div class="product-empty-state">
+
+                <div class="product-empty-icon">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+
+                <h3>No Products Found</h3>
+
+                <p>
+                    No products match your current search or filter.
+                </p>
+
+                <a asp-controller="Product"
+                   asp-action="Create"
+                   class="manage-primary-btn">
+
+                    <i class="bi bi-plus-lg"></i>
+                    Add First Product
+
+                </a>
+
+            </div>
+        }
+
+    </div>
+
+</div>

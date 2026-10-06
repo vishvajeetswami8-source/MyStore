@@ -1,0 +1,98 @@
+﻿@model IEnumerable<MyApp.Web.Models.SupportTicket>
+
+@{
+    ViewData["Title"] = "My Support Requests";
+}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h2>My Support Requests</h2>
+
+        <a asp-action="Create"
+           class="btn btn-primary">
+            + Raise Request
+        </a>
+
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You have not raised any support requests yet.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-light">
+
+                    <tr>
+                        <th>Ticket ID</th>
+                        <th>Subject</th>
+                        <th>Priority</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var ticket in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                #@ticket.Id
+                            </td>
+
+                            <td>
+                                @ticket.Subject
+                            </td>
+
+                            <td>
+                                @ticket.Priority
+                            </td>
+
+                            <td>
+                                @ticket.Status
+                            </td>
+
+                            <td>
+                                @ticket.CreatedDate.ToString("dd MMM yyyy HH:mm")
+                            </td>
+
+                            <td>
+
+                                <a asp-action="Details"
+                                   asp-route-id="@ticket.Id"
+                                   class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+</div>

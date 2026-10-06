@@ -1,0 +1,314 @@
+﻿@model IEnumerable<MyApp.Web.Models.Product>
+
+@{
+    ViewData["Title"] = "Products";
+
+    var subCategories =
+        ViewBag.SubCategories as IEnumerable<MyApp.Web.Models.SubCategory>
+        ?? Enumerable.Empty<MyApp.Web.Models.SubCategory>();
+
+    var selectedSubCategory =
+        ViewBag.SelectedSubCategory as int?;
+
+    var search =
+        ViewBag.Search as string;
+}
+
+<div class="products-page">
+
+    <!-- =========================
+         PAGE HEADER
+    ========================== -->
+
+    <div class="products-header">
+
+        <div>
+            <div class="products-eyebrow">
+                <i class="bi bi-shop"></i>
+                MYAPP STORE
+            </div>
+
+            <h1>Explore Products</h1>
+
+            <p>
+                Discover products you'll love at great prices.
+            </p>
+        </div>
+
+        <div class="products-count">
+            <strong>@Model.Count()</strong>
+            <span>Products</span>
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SEARCH & FILTER
+    ========================== -->
+
+    <div class="product-filter-card">
+
+        <form asp-controller="Product"
+              asp-action="Index"
+              method="get"
+              class="product-filter-form">
+
+            <!-- Search -->
+
+            <div class="product-search-box">
+
+                <i class="bi bi-search"></i>
+
+                <input type="text"
+                       name="search"
+                       value="@search"
+                       placeholder="Search products..."
+                       autocomplete="off" />
+
+            </div>
+
+
+            <!-- Category -->
+
+            <div class="product-category-select">
+
+                <i class="bi bi-grid"></i>
+
+                <select name="subCategoryId">
+
+                    <option value="">
+                        All Categories
+                    </option>
+
+                    @foreach (var categoryGroup in
+                                        subCategories.GroupBy(x => x.Category!.Name))
+                    {
+                        <optgroup label="@categoryGroup.Key">
+
+                            @foreach (var subCategory in categoryGroup)
+                            {
+                                <option value="@subCategory.Id"
+                                        selected="@(selectedSubCategory == subCategory.Id)">
+                                    @subCategory.Name
+                                </option>
+                            }
+
+                        </optgroup>
+                    }
+
+                </select>
+
+            </div>
+
+
+            <!-- Search Button -->
+
+            <button type="submit"
+                    class="product-search-btn">
+
+                <i class="bi bi-search"></i>
+                Search
+
+            </button>
+
+
+            <!-- Clear -->
+            @if (!string.IsNullOrWhiteSpace(search) ||
+                        selectedSubCategory.HasValue)
+            {
+                <a asp-controller="Product"
+                   asp-action="Index"
+                   class="product-clear-btn">
+
+                    <i class="bi bi-x-circle"></i>
+                    Clear
+
+                </a>
+            }
+
+        </form>
+
+    </div>
+
+
+    <!-- =========================
+         ACTIVE FILTER
+    ========================== -->
+    @if (!string.IsNullOrWhiteSpace(search))
+    {
+        <div class="active-filter">
+
+            <span>
+                Search results for
+                <strong>"@search"</strong>
+            </span>
+
+            <a asp-controller="Product"
+               asp-action="Index">
+
+                <i class="bi bi-x"></i>
+
+            </a>
+
+        </div>
+    }
+
+
+    <!-- =========================
+         PRODUCTS
+    ========================== -->
+    @if (Model.Any())
+    {
+        <div class="products-grid">
+
+            @foreach (var product in Model)
+            {
+                <div class="store-product-card">
+
+                    <!-- Image -->
+
+                    <div class="store-product-image">
+
+                        @if (!string.IsNullOrWhiteSpace(product.ImageUrl))
+                        {
+                            <img src="@product.ImageUrl"
+                                 alt="@product.Name" />
+                        }
+                        else
+                        {
+                            <div class="product-image-placeholder">
+
+                                <i class="bi bi-image"></i>
+
+                            </div>
+                        }
+
+
+                        <!-- Wishlist -->
+
+                        <form asp-controller="Wishlist"
+                              asp-action="Add"
+                              asp-route-productId="@product.Id"
+                              method="post"
+                              class="wishlist-form">
+
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit"
+                                    class="wishlist-btn"
+                                    title="Add to Wishlist">
+
+                                <i class="bi bi-heart"></i>
+
+                            </button>
+
+                        </form>
+
+                    </div>
+
+
+                    <!-- Product Info -->
+
+                    <div class="store-product-info">
+
+                        @if (product.SubCategory != null)
+                        {
+                            <span class="product-category-label">
+
+                                @product.SubCategory.Name
+
+                            </span>
+                        }
+
+                        <h3>
+                            @product.Name
+                        </h3>
+
+                        <p class="product-description">
+
+                            @if (product.Description.Length > 90)
+                            {
+                                @product.Description.Substring(0, 90)
+                                <text>...</text>
+                            }
+                            else
+                            {
+                                @product.Description
+                            }
+
+                        </p>
+
+
+                        <!-- Price -->
+
+                        <div class="product-price-row">
+
+                            <div class="product-price">
+
+                                ₹@product.Price.ToString("N2")
+
+                            </div>
+
+                            <span class="product-stock">
+                                <i class="bi bi-check-circle-fill"></i>
+                                In Stock
+                            </span>
+
+                        </div>
+
+
+                        <!-- Action -->
+
+                        <a asp-controller="Product"
+                           asp-action="Details"
+                           asp-route-id="@product.Id"
+                           class="view-product-btn">
+
+                            View Product
+
+                            <i class="bi bi-arrow-right"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <!-- =========================
+             EMPTY STATE
+        ========================== -->
+
+        <div class="products-empty">
+
+            <div class="products-empty-icon">
+
+                <i class="bi bi-search"></i>
+
+            </div>
+
+            <h2>No Products Found</h2>
+
+            <p>
+                We couldn't find any products matching your search.
+                Try another keyword or category.
+            </p>
+
+            <a asp-controller="Product"
+               asp-action="Index"
+               class="btn-browse-products">
+
+                <i class="bi bi-arrow-left"></i>
+                View All Products
+
+            </a>
+
+        </div>
+    }
+
+</div>

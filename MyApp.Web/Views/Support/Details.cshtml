@@ -1,0 +1,102 @@
+﻿@model MyApp.Web.Models.SupportTicket
+
+@{
+    ViewData["Title"] = "Support Request";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <div class="d-flex justify-content-between">
+
+                <h4>
+                    Support Request #@Model.Id
+                </h4>
+
+                <span class="badge bg-primary">
+                    @Model.Status
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="mb-3">
+
+                <strong>Subject</strong>
+
+                <p>
+                    @Model.Subject
+                </p>
+
+            </div>
+
+
+            <div class="mb-3">
+
+                <strong>Priority</strong>
+
+                <p>
+                    @Model.Priority
+                </p>
+
+            </div>
+
+
+            <div class="mb-3">
+
+                <strong>Your Issue</strong>
+
+                <div class="border rounded p-3 bg-light">
+                    @Model.Description
+                </div>
+
+            </div>
+
+
+            <div class="mb-3">
+
+                <strong>Created</strong>
+
+                <p>
+                    @Model.CreatedDate.ToString(
+                    "dd MMM yyyy HH:mm")
+                </p>
+
+            </div>
+
+
+            @if (!string.IsNullOrWhiteSpace(Model.AdminResponse))
+            {
+                <div class="mb-3">
+
+                    <strong>Admin Response</strong>
+
+                    <div class="border rounded p-3 bg-light">
+                        @Model.AdminResponse
+                    </div>
+
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    Our support team has not responded yet.
+                </div>
+            }
+
+            <a asp-action="MyTickets"
+               class="btn btn-outline-secondary">
+                ← Back to My Requests
+            </a>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,191 @@
+﻿@model MyApp.Web.Models.SupportTicket
+
+@{
+    ViewData["Title"] = "Support Ticket Details";
+}
+
+<div class="container mt-4">
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+
+            <h4>
+                Support Ticket #@Model.Id
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <h5>User Information</h5>
+
+                    <p>
+                        <strong>Username:</strong>
+                        @Model.User?.Username
+                    </p>
+
+                    <p>
+                        <strong>Email:</strong>
+                        @Model.User?.Email
+                    </p>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+                    <h5>Ticket Information</h5>
+
+                    <p>
+                        <strong>Created:</strong>
+                        @Model.CreatedDate.ToString(
+                        "dd MMM yyyy HH:mm")
+                    </p>
+
+                    <p>
+                        <strong>Priority:</strong>
+                        @Model.Priority
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        @Model.Status
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5>@Model.Subject</h5>
+        </div>
+
+        <div class="card-body">
+
+            <h6>User's Issue</h6>
+
+            <div class="border rounded p-3 bg-light">
+                @Model.Description
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="card shadow-sm">
+
+        <div class="card-header">
+
+            <h5>Admin Response</h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Reply"
+                  method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="Id"
+                       value="@Model.Id" />
+
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Status
+                    </label>
+
+                    <select name="Status"
+                            class="form-select">
+
+                        <option value="Open"
+                                selected="@(Model.Status == "Open")">
+                            Open
+                        </option>
+
+                        <option value="In Progress"
+                                selected="@(Model.Status == "In Progress")">
+                            In Progress
+                        </option>
+
+                        <option value="Resolved"
+                                selected="@(Model.Status == "Resolved")">
+                            Resolved
+                        </option>
+
+                        <option value="Closed"
+                                selected="@(Model.Status == "Closed")">
+                            Closed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Response to User
+                    </label>
+
+                    <textarea name="AdminResponse"
+                              class="form-control"
+                              rows="6"
+                              placeholder="Enter your response to the user...">@Model.AdminResponse</textarea>
+
+                </div>
+
+
+                <div class="d-flex gap-2">
+
+                    <button type="submit"
+                            class="btn btn-success">
+                        Send Response
+                    </button>
+
+                    <a asp-action="Manage"
+                       class="btn btn-outline-secondary">
+                        ← Back
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

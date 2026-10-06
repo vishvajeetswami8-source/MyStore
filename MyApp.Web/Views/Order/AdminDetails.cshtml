@@ -1,0 +1,401 @@
+﻿@model MyApp.Web.Models.Order
+
+@{
+    ViewData["Title"] = "Order Details";
+}
+
+<div class="container mt-4">
+
+    <!-- Header -->
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2>
+                Order #@Model.Id
+            </h2>
+
+            <p class="text-muted mb-0">
+                Placed on
+                @Model.OrderDate.ToString(
+                "dd MMM yyyy, hh:mm tt")
+            </p>
+
+        </div>
+
+
+        <a asp-action="Manage"
+           class="btn btn-outline-secondary">
+            ← Back to Orders
+        </a>
+
+    </div>
+
+
+    <!-- Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+
+    <div class="row">
+
+        <!-- LEFT SIDE -->
+
+        <div class="col-md-8">
+
+
+            <!-- Customer Information -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        Customer Information
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        <div class="col-md-6">
+
+                            <strong>
+                                Username
+                            </strong>
+
+                            <p>
+                                @Model.User?.Username
+                            </p>
+
+                        </div>
+
+
+                        <div class="col-md-6">
+
+                            <strong>
+                                Email
+                            </strong>
+
+                            <p>
+                                @Model.User?.Email
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Ordered Products -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        Ordered Products
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    @foreach (var item in Model.OrderItems)
+                    {
+                        <div class="row align-items-center mb-3">
+
+
+                            <!-- Image -->
+
+                            <div class="col-md-2">
+
+                                @if (!string.IsNullOrEmpty(
+                                                            item.Product?.ImageUrl))
+                                {
+                                    <img src="@item.Product.ImageUrl"
+                                         class="img-fluid rounded"
+                                         style="height:70px;
+                                                        width:70px;
+                                                        object-fit:cover;" />
+                                }
+                                else
+                                {
+                                    <div class="bg-light rounded d-flex
+                                                        align-items-center
+                                                        justify-content-center"
+                                         style="height:70px;width:70px;">
+
+                                        No Image
+
+                                    </div>
+                                }
+
+                        </div>
+
+
+                        <!-- Product -->
+
+                        <div class="col-md-4">
+
+                            <strong>
+                                @item.Product?.Name
+                            </strong>
+
+                        </div>
+
+
+                        <!-- Quantity -->
+
+                        <div class="col-md-2">
+
+                            <small class="text-muted">
+                                Quantity
+                            </small>
+
+                            <div>
+                                @item.Quantity
+                            </div>
+
+                        </div>
+
+
+                        <!-- Price -->
+
+                        <div class="col-md-2">
+
+                            <small class="text-muted">
+                                Unit Price
+                            </small>
+
+                            <div>
+                                ₹@item.UnitPrice.ToString("N2")
+                            </div>
+
+                        </div>
+
+
+                        <!-- Total -->
+
+                        <div class="col-md-2">
+
+                            <small class="text-muted">
+                                Total
+                            </small>
+
+                            <div class="fw-bold">
+
+                                ₹@((item.UnitPrice *
+                                                                item.Quantity)
+                                                                .ToString("N2"))
+
+                            </div>
+
+                            </div>
+
+                        </div>
+
+                        <hr />
+                                        }
+
+
+                    <div class="d-flex justify-content-end">
+
+                        <h5>
+                            Total:
+                            ₹@Model.TotalAmount.ToString("N2")
+                        </h5>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Shipping Address -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        Shipping Address
+                    </h5>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p style="white-space: pre-line;">
+                        @Model.ShippingAddress
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT SIDE -->
+
+        <div class="col-md-4">
+
+
+            <!-- Order Status -->
+
+            <div class="card shadow-sm mb-4">
+
+                <div class="card-header">
+
+                    <h5 class="mb-0">
+                        Order Status
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    <form asp-action="UpdateStatus"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden"
+                               name="id"
+                               value="@Model.Id" />
+
+
+                        <label class="form-label">
+                            Update Status
+                        </label>
+
+
+                        <select name="status"
+                                class="form-select mb-3">
+
+                            <option value="Pending"
+                                    selected="@(Model.Status == "Pending")">
+                                Pending
+                            </option>
+
+                            <option value="Confirmed"
+                                    selected="@(Model.Status == "Confirmed")">
+                                Confirmed
+                            </option>
+
+                            <option value="Shipped"
+                                    selected="@(Model.Status == "Shipped")">
+                                Shipped
+                            </option>
+
+                            <option value="Delivered"
+                                    selected="@(Model.Status == "Delivered")">
+                                Delivered
+                            </option>
+
+                            <option value="Cancelled"
+                                    selected="@(Model.Status == "Cancelled")">
+                                Cancelled
+                            </option>
+
+                        </select>
+
+
+                        @if (Model.Status != "Cancelled" &&
+                                                Model.Status != "Delivered")
+                        {
+                            <button type="submit"
+                                    class="btn btn-primary w-100">
+                                Update Status
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="button"
+                                    class="btn btn-secondary w-100"
+                                    disabled>
+                                Status Locked
+                            </button>
+                        }
+
+                    </form>
+
+                </div>
+
+            </div>
+
+
+            <!-- Cancel Order -->
+            @if (Model.Status != "Cancelled" &&
+                        Model.Status != "Delivered" &&
+                        Model.Status != "Shipped")
+            {
+                <div class="card shadow-sm border-danger">
+
+                    <div class="card-header text-danger">
+
+                        <strong>
+                            Cancel Order
+                        </strong>
+
+                    </div>
+
+
+                    <div class="card-body">
+
+                        <p class="text-muted">
+                            This action will mark the order as
+                            cancelled.
+                        </p>
+
+
+                        <form asp-action="CancelOrder"
+                              method="post"
+                              onsubmit="return confirm(
+                                      'Are you sure you want to cancel this order?');">
+
+                            @Html.AntiForgeryToken()
+
+                            <input type="hidden"
+                                   name="id"
+                                   value="@Model.Id" />
+
+                            <button type="submit"
+                                    class="btn btn-danger w-100">
+                                Cancel Order
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
